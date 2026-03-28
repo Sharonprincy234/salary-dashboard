@@ -6,8 +6,8 @@ st.title("Salary Prediction App")
 
 df = pd.read_csv("employee_salary_dataset.csv")
 
-X = df.drop("salary", axis=1)
-y = df["salary"]
+X = df.drop("Monthly_Salary", axis=1)
+y = df["Monthly_Salary"]
 
 model = RandomForestRegressor()
 model.fit(X, y)
