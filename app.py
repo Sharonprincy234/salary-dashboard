@@ -2,37 +2,54 @@ import streamlit as st
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 
-st.title("💼 Salary Prediction App")
+# Title
+st.title("💼 Salary Prediction Dashboard")
 
 # Load dataset
 df = pd.read_csv("employee_salary_dataset.csv")
 
-# Convert column names to lowercase
-df.columns = df.columns.str.lower()
+# Clean column names (remove spaces + lowercase)
+df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
 
-# Convert text data to numbers
+# Convert text data to numeric
 df = pd.get_dummies(df)
 
+# Show dataset (optional)
+st.write("### Dataset Preview")
+st.dataframe(df.head())
+
+# Show columns (for safety)
 st.write("Columns:", df.columns)
 
+# -----------------------------
+# IMPORTANT: Target column
+# -----------------------------
+# Change this ONLY if needed after checking column names
+target_column = "monthly_salary"   # or "salary"
+
 # Split data
-X = df.drop("Monthly_Salary", axis=1)
-y = df["Monthly_Salary"]
+X = df.drop(target_column, axis=1)
+y = df[target_column]
 
 # Train model
 model = RandomForestRegressor()
 model.fit(X, y)
 
-# User input
+# -----------------------------
+# USER INPUT SECTION
+# -----------------------------
 st.sidebar.header("Enter Details")
 
 inputs = {}
+
 for col in X.columns:
-    inputs[col] = st.sidebar.number_input(col, value=0)
+    inputs[col] = st.sidebar.number_input(f"{col}", value=0)
 
 input_df = pd.DataFrame([inputs])
 
-# Prediction
-if st.button("Predict"):
-    result = model.predict(input_df)
-    st.success(f"💰 Salary: ₹{result[0]:,.2f}")
+# -----------------------------
+# PREDICTION
+# -----------------------------
+if st.button("Predict Salary"):
+    prediction = model.predict(input_df)
+    st.success(f"💰 Predicted Salary: ₹ {prediction[0]:,.2f}")
